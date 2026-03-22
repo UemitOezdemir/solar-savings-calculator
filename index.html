@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="src/css/normalize.css">
+  <link rel="stylesheet" href="src/css/pv-calculator.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css">
+  <script src="https://unpkg.com/leaflet-gesture-handling"></script>
+</head>
+
+<body>
+  <template id="roof-card">
+    <div class="roof-card" data-active="true" data-element="card">
+      <div class="roof-card__content">
+        <h4 class="roof-card__headline" data-element="headline">Roof 1</h4>
+        <div class="roof-card__description">
+          <div class="roof-card__angle-wrapper" aria-label="Dachwinkel">
+            <svg class="roof-card__angle-icon">
+              <use href="#roof-angle-icon"></use>
+            </svg>
+            <span class="roof-card__angle" data-element="angle">0</span>
+            <span>°</span>
+          </div>
+          <div class="roof-card__module-count-wrapper" aria-label="Anzahl der Module">
+            <svg class="roof-card__module-count-icon">
+              <use href="#solar-module-icon"></use>
+            </svg>
+            <span class="roof-card__module-count" data-element="module-count">0</span>
+            <span>pc</span>
+          </div>
+        </div>
+      </div>
+      <div class="roof-card__btn-container">
+        <button data-active="true" class="roof-card__control-btn" type="button" data-element="edit" title="Edit roof setup" aria-label="Edit roof setup">
+          <svg class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
+            <use href="#pen-icon"></use>
+          </svg>
+        </button>
+        <button data-active="false" class="roof-card__control-btn" type="button" data-element="hide" title="Hide roof setup" aria-label="Hide roof setup">
+          <svg viewBox="15 35 170 130" class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
+            <path d="M 20 100 C 50 40, 150 40, 180 100 C 150 160, 50 160, 20 100 Z" mask="url(#global-eye-mask)" />
+          </svg>
+        </button>
+        <button data-active="false" class="roof-card__control-btn" type="button" data-element="delete" title="Delete roof setup" aria-label="Delete roof setup">
+          <svg class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
+            <use href="#bin-icon"></use>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </template>
+  <svg style="display: none;">
+    <symbol viewBox="0 0 512 512" id="pen-icon">
+      <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"></path>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="0 0 512 512" id="hand-icon">
+      <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V336c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64H304c97.2 0 176-78.8 176-176V128c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V240c0 8.8-7.2 16-16 16s-16-7.2-16-16V32z"></path>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="0 0 512 512" id="undo-icon">
+      <path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3s-163.8-62.5-226.3 0L125.7 160z"></path>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="0 0 448 512" id="bin-icon">
+      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="43 42.5 139 113" id="roof-angle-icon" xmlns="http://www.w3.org">
+      <!-- Roof silhouette -->
+      <path d="M 45 140 L 115 45 L 145 85 V 60 H 165 V 110" fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" />
+      <!-- Horizontal baseline -->
+      <line x1="45" y1="140" x2="180" y2="140" stroke-width="4" stroke-linecap="round" />
+      <!-- Angle arc -->
+      <path d="M 100 155 A 60 60 0 0 0 65 85" fill="none" stroke-width="4" stroke-linecap="butt" />
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="18 38 164 134" id="solar-module-icon" xmlns="http://www.w3.org">
+      <!-- Module Outline -->
+      <path d="M 50 40 H 150 L 180 130 H 20 Z" fill="none" stroke="black" stroke-width="4" stroke-linejoin="round" />
+      <!-- Horizontal grid lines -->
+      <line x1="43" y1="62.5" x2="157" y2="62.5" stroke-width="4" />
+      <line x1="36" y1="85" x2="164" y2="85" stroke-width="4" />
+      <line x1="28" y1="107.5" x2="172" y2="107.5" stroke-width="4" />
+      <!-- Vertical grid lines -->
+      <line x1="83" y1="40" x2="70" y2="130" stroke-width="4" />
+      <line x1="117" y1="40" x2="130" y2="130" stroke-width="4" />
+      <!-- Base -->
+      <line x1="100" y1="130" x2="100" y2="170" stroke-width="4" stroke-linecap="square" />
+      <line x1="30" y1="170" x2="170" y2="170" stroke-width="4" stroke-linecap="square" />
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="1 1 22 22" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="gable-roof-icon" viewBox="-2 0 105 93" fill="transparent" stroke="#122b4e" stroke-linejoin="round" stroke-linecap="round">
+      <!-- roof 2 -->
+      <polyline points="25 3 52 1 102 31 75 33" style=" fill: var(--roof-fill, transparent);"></polyline>
+      <!-- roof 1 -->
+      <polyline points="25 3 2 31 52 61 75 33" style="stroke: var(--roof-edge, #1f2937); stroke-width: var(--roof-edge-width, 1); fill: var(--roof-fill, transparent);"></polyline>
+      <!-- ridge roof 1 -->
+      <polyline points="75 33 25 3" style="stroke: var(--roof-ridge, #1f2937); stroke-width: var(--roof-ridge-width, 1)"></polyline>
+      <!-- wall right -->
+      <polyline points="102 31 102 62 52 92 52 61"></polyline>
+      <!-- wall left -->
+      <polyline points="2 31 2 61 52 92"></polyline>
+      <!-- marker -->
+      <g style="stroke: var(--marker-stroke, transparent); fill: var(--marker-fill, transparent)">
+        <circle cx="25" cy="3" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="2" cy="31" r="2" />
+        <circle cx="52" cy="61" r="2" />
+        <circle cx="75" cy="33" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+      </g>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="hip-roof-icon" viewBox="-2 0 105 93" fill="transparent" stroke="#122b4e" stroke-linejoin="round" stroke-linecap="round">
+      <!-- top -->
+      <polyline points="52 1 102 31 52 61 2 31 "></polyline>
+      <!-- roof 2 -->
+      <polyline points="52 1 32 7 67 28 102 31" style=" fill: var(--roof-fill, transparent);"></polyline>
+      <!-- wall right -->
+      <polyline points="102 31 102 62 52 92 52 61"></polyline>
+      <!-- wall left -->
+      <polyline points="2 31 2 61 52 92"></polyline>
+      <!-- roof 1 -->
+      <polyline points="32 7 2 31 52 61 67 28" style="stroke: var(--roof-edge, #1f2937); stroke-width: var(--roof-edge-width, 1); fill: var(--roof-fill, transparent);"></polyline>
+      <!-- ridge roof 1 -->
+      <polyline points="32 7 67 28" style="stroke: var(--roof-ridge, #1f2937); stroke-width: var(--roof-ridge-width, 1)"></polyline>
+      <!-- marker -->
+      <g style="stroke: var(--marker-stroke, transparent); fill: var(--marker-fill, transparent)">
+        <circle cx="2" cy="31" r="2" />
+        <circle cx="32" cy="7" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="67" cy="28" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="52" cy="61" r="2" />
+      </g>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="pyramid-roof-icon" viewBox="-2 0 105 93" fill="transparent" stroke="#122b4e" stroke-linejoin="round" stroke-linecap="round">
+      <!-- top -->
+      <polyline points="52 1 102 31 52 61 2 31 52 1"></polyline>
+      <!-- roof 2 -->
+      <polyline points="52 1 52 17 102 31" style=" fill: var(--roof-fill, transparent);"></polyline>
+      <!-- wall right -->
+      <polyline points="102 31 102 62 52 92 52 61"></polyline>
+      <!-- wall left -->
+      <polyline points="2 31 2 61 52 92"></polyline>
+      <!-- roof 1 -->
+      <polyline points="2 31 52 17 52 61" style="stroke: var(--roof-edge, #1f2937); stroke-width: var(--roof-edge-width, 1); fill: var(--roof-fill, transparent);"></polyline>
+      <!-- ridge roof 1 -->
+      <polyline points="2 31 52 61" style="stroke: var(--roof-ridge, #1f2937); stroke-width: var(--roof-ridge-width, 1)"></polyline>
+      <!-- marker -->
+      <g style="stroke: var(--marker-stroke, transparent); fill: var(--marker-fill, transparent)">
+        <circle cx="2" cy="31" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="52" cy="17" r="2" />
+        <circle cx="52" cy="61" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+      </g>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="flat-roof-icon" viewBox="-2 0 107 93" fill="transparent" stroke="#122b4e" stroke-linejoin="round" stroke-linecap="round">
+      <!-- wall right -->
+      <polyline points="102 31 102 62 52 92 52 61"></polyline>
+      <!-- wall left -->
+      <polyline points="2 31 2 61 52 92"></polyline>
+      <!-- roof -->
+      <polyline class="roof" points="52 3 102 31 52 61 2 31 52 3" style="stroke: var(--roof-edge, #1f2937); stroke-width: var(--roof-edge-width, 1); fill: var(--roof-fill, transparent);"></polyline>
+      <!-- marker -->
+      <g style="stroke: var(--marker-stroke, transparent); fill: var(--marker-fill, transparent)">
+        <circle cx="52" cy="3" r="2" />
+        <circle cx="2" cy="31" r="2" />
+        <circle cx="102" cy="31" r="2" />
+        <circle cx="52" cy="61" r="2" />
+      </g>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="shed-roof-icon" viewBox="-2 0 107 93" fill="transparent" stroke="#122b4e" stroke-linejoin="round" stroke-linecap="round">
+      <!-- wall right -->
+      <polyline points="102 21 102 62 52 92 52 51"></polyline>
+      <!-- wall left -->
+      <polyline points="2 41 2 61 52 92"></polyline>
+      <!-- roof -->
+      <polyline class="roof" points="52 11 102 21 52 51 2 41 52 11" style="stroke: var(--roof-edge, #1f2937); stroke-width: var(--roof-edge-width, 1); fill: var(--roof-fill, transparent);"></polyline>
+      <!-- ridge roof 1 -->
+      <polyline points="102 21 52 51" style="stroke: var(--roof-ridge, #1f2937); stroke-width: var(--roof-ridge-width, 1)"></polyline>
+      <!-- marker -->
+      <g style="stroke: var(--marker-stroke, transparent); fill: var(--marker-fill, transparent)">
+        <circle cx="52" cy="11" r="2" />
+        <circle cx="102" cy="21" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="52" cy="51" r="2" style="stroke: var(--ridge-marker-stroke, --marker-stroke, transparent); fill: var(--ridge-marker-fill, --marker-fill, transparent)" />
+        <circle cx="2" cy="41" r="2" />
+      </g>
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol id="plus-icon" viewBox="2 2 96 96" xmlns="http://www.w3.org">
+      <!-- circle -->
+      <circle cx="50" cy="50" r="45" stroke-width="6" fill="none" />
+      <!-- plus -->
+      <g stroke-width="6" stroke-linecap="round">
+        <line x1="30" y1="50" x2="70" y2="50" /> <!-- Horizontal Linie -->
+        <line x1="50" y1="30" x2="50" y2="70" /> <!-- Vertical Linie -->
+      </g>
+    </symbol>
+  </svg>
+  <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+    <mask id="global-eye-mask">
+      <rect x="20" y="54.75" width="160" height="90" fill="white" />
+      <circle cx="100" cy="100" r="30" stroke="black" stroke-width="16" fill="none" />
+      <line x1="60" y1="140" x2="140" y2="60" stroke="black" stroke-width="16" />
+    </mask>
+  </svg>
+  <header class="header-wrapper">
+    <div class="header">
+      <div class="header__box-left">
+        <h1 class="header__headline">PHOTOVOLTAIC CALCULATOR</h1>
+        <p class="deko-headline">Your path to renewable energy</p>
+      </div>
+      <p class="header__box-right">In just 5 minutes, calculate how much you can save by switching to solar energy, with no obligation. Visualize your roof with the possible module layout.</p>
+    </div>
+  </header>
+  <main>
+    <section class="main-content">
+      <div class="selection-wrapper">
+        <article id="roof-type-selection" class="selection" aria-labelledby="roof-selection-headline">
+          <header class="selection__header-wrapper">
+            <h2 id="roof-selection-headline" class="selection__header">Select Roof Type</h2>
+            <button aria-hidden="true" type="button" class="selection__info-btn"></button>
+            <span>1/5</span>
+          </header>
+          <fieldset class="selection__body">
+            <div class="roof-selection">
+              <input class="roof-selection__input" type="radio" id="gable-roof" name="roof-type" value="gable-roof">
+              <label class="roof-selection-label" for="gable-roof">
+                <svg class="roof-icon" viewBox="0 0 103 93">
+                  <use href="#gable-roof-icon"></use>
+                </svg>
+                <span>Gable</span>
+              </label>
+            </div>
+            <div class="roof-selection">
+              <input class="roof-selection__input" type="radio" id="hip-roof" name="roof-type" value="hip-roof">
+              <label class="roof-selection-label" for="hip-roof">
+                <svg class="roof-icon" viewBox="0 0 103 93">
+                  <use href="#hip-roof-icon"></use>
+                </svg>
+                <span>Hip</span>
+              </label>
+            </div>
+            <div class="roof-selection">
+              <input class="roof-selection__input" type="radio" id="pyramid-roof" name="roof-type" value="pyramid-hip">
+              <label class="roof-selection-label" for="pyramid-roof">
+                <svg class="roof-icon" viewBox="0 0 103 93">
+                  <use href="#pyramid-roof-icon"></use>
+                </svg>
+                <span>Pyramid</span>
+              </label>
+            </div>
+            <div class="roof-selection">
+              <input class="roof-selection__input" type="radio" id="flat-roof" name="roof-type" value="flat">
+              <label class="roof-selection-label" for="flat-roof">
+                <svg class="roof-icon" viewBox="0 0 103 93">
+                  <use href="#flat-roof-icon"></use>
+                </svg>
+                <span>Flat</span>
+              </label>
+            </div>
+            <div class="roof-selection">
+              <input class="roof-selection__input" type="radio" id="shed-roof" name="roof-type" value="shed">
+              <label class="roof-selection-label" for="shed-roof">
+                <svg class="roof-icon" viewBox="0 0 103 93">
+                  <use href="#shed-roof-icon"></use>
+                </svg>
+                <span>Shed</span>
+              </label>
+            </div>
+          </fieldset>
+          <footer class="selection__footer">
+            <button disabled class="selection__progress-btn" type="button" data-current="roof-type-selection" data-target="roof-setup" data-direction="next" onclick="document.getElementById('mark-out-info').showModal()">Next</button>
+          </footer>
+        </article>
+        <article id="roof-setup" class="selection" aria-labelledby="roof-selection-headline" hidden>
+          <header class="selection__header-wrapper">
+            <h2 id="roof-selection-headline" class="selection__header">Mark out the roof area</h2>
+            <button type="button" class="selection__info-btn" onclick="document.getElementById('mark-out-info').showModal()">
+              <svg class="selection__info-icon">
+                <use href="#info-icon"></use>
+              </svg>
+            </button>
+            <span>2/5</span>
+          </header>
+          <div class="selection__body" data-mark-up="true">
+            <div class="selection__body-setup-controls">
+              <button id="add-new-roof" type="button" data-active="false" class="selection__body-start-marking-btn">
+                <svg class="selection__body-start-marking-btn-icon">
+                  <use href="#plus-icon"></use>
+                </svg>
+                <span>Add new roof</span>
+              </button>
+            </div>
+          </div>
+          <footer class="selection__footer">
+            <button class="selection__progress-btn" type="button" data-current="roof-setup" data-target="roof-type-selection" data-direction="previous">Previous</button>
+            <button disabled class="selection__progress-btn" type="button" data-current="roof-setup" data-target="roof-edge-selection" data-direction="next" onclick="document.getElementById('roof-edge-info').showModal()">Next</button>
+          </footer>
+          <dialog class="info-dialog" id="mark-out-info" aria-labelledby="mark-out-header">
+            <h2 id="mark-out-header" class="info-dialog__headline">Mark off the roof area where you want to install PV modules.</h2>
+            <svg class="info-dialog__roof-icon mark-out">
+              <use href="#shed-roof-icon"></use>
+            </svg>
+            <p class="info-dialog__description"><b>Here's how:</b> Click on each corner of your roof one by one to define the buildable area. Close the shape by clicking on the first point again.</p>
+            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
+          </dialog>
+        </article>
+        <article id="roof-edge-selection" class="selection" aria-labelledby="roof-edge-headline" hidden>
+          <header class="selection__header-wrapper">
+            <h2 id="roof-edge-headline" class="selection__header">Select roof edge</h2>
+            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
+              <svg class="selection__info-icon">
+                <use href="#info-icon"></use>
+              </svg>
+            </button>
+            <span>3/5</span>
+          </header>
+          <div class="selection__body" data-mark-up="true">
+          </div>
+          <footer class="selection__footer">
+            <button class="selection__progress-btn" type="button" data-current="roof-edge-selection" data-target="roof-setup" data-direction="previous">Previous</button>
+            <button disabled class="selection__progress-btn" type="button" data-current="roof-edge-selection" data-target="module-setup" data-direction="next">Next</button>
+          </footer>
+          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
+            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
+            <svg class="info-dialog__roof-icon edge-selection">
+              <use href="#shed-roof-icon"></use>
+            </svg>
+            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
+            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
+          </dialog>
+        </article>
+        <article id="module-setup" class="selection" aria-labelledby="roof-selection-headline" hidden>
+          <header class="selection__header-wrapper">
+            <h2 id="roof-selection-headline" class="selection__header">Setup Modules</h2>
+            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
+              <svg class="selection__info-icon">
+                <use href="#info-icon"></use>
+              </svg>
+            </button>
+            <span>3/5</span>
+          </header>
+          <div class="selection__body" data-mark-up="true">
+            <div class="selection__body-setup-controls">
+              <div class="setup-controls__angle-slider-wrapper">
+                <label class="setup-controls__angle-slider-label" for="roof-angle">Roof Angle: <span id="display-roof-angle">30</span></label>
+                <button class="setup-controls__angle-slider-btn" id="decrease-roof-angle" type="button">-</button>
+                <input class="setup-controls__angle-slider" id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step=".5">
+                <button class="setup-controls__angle-slider-btn" id="increase-roof-angle" type="button">+</button>
+              </div>
+              <div class="setup-controls__angle-slider-wrapper">
+                <label class="setup-controls__angle-slider-label" for="distortion-angle">Distotion Angle: <span id="display-distortion-angle">0</span></label>
+                <button class="setup-controls__angle-slider-btn" id="decrease-distortion-angle" type="button">-</button>
+                <input class="setup-controls__angle-slider" id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step=".5">
+                <button class="setup-controls__angle-slider-btn" id="increase-distortion-angle" type="button">+</button>
+              </div>
+            </div>
+          </div>
+          <footer class="selection__footer">
+            <button class="selection__progress-btn" type="button" data-current="module-setup" data-target="roof-edge-selection" data-direction="previous">Previous</button>
+            <button disabled class="selection__progress-btn" type="button" data-current="module-setup" data-target="battery-selection" data-direction="next">Next</button>
+          </footer>
+          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
+            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
+            <svg class="info-dialog__roof-icon edge-selection">
+              <use href="#shed-roof-icon"></use>
+            </svg>
+            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
+            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
+          </dialog>
+        </article>
+        <article id="battery-selection" class="selection" aria-labelledby="roof-selection-headline" hidden>
+          <header class="selection__header-wrapper">
+            <h2 id="roof-selection-headline" class="selection__header">Setup Modules</h2>
+            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
+              <svg class="selection__info-icon">
+                <use href="#info-icon"></use>
+              </svg>
+            </button>
+            <span>3/5</span>
+          </header>
+          <div class="selection__body" data-mark-up="true">
+            <div class="selection__body-setup-controls">
+              <div class="setup-controls__angle-slider-wrapper">
+                <label class="setup-controls__angle-slider-label" for="roof-angle">Roof Angle: <span id="display-roof-angle">30</span></label>
+                <button class="setup-controls__angle-slider-btn" id="decrease-roof-angle" type="button">-</button>
+                <input class="setup-controls__angle-slider" id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step=".5">
+                <button class="setup-controls__angle-slider-btn" id="increase-roof-angle" type="button">+</button>
+              </div>
+              <div class="setup-controls__angle-slider-wrapper">
+                <label class="setup-controls__angle-slider-label" for="distortion-angle">Distotion Angle: <span id="display-distortion-angle">0</span></label>
+                <button class="setup-controls__angle-slider-btn" id="decrease-distortion-angle" type="button">-</button>
+                <input class="setup-controls__angle-slider" id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step=".5">
+                <button class="setup-controls__angle-slider-btn" id="increase-distortion-angle" type="button">+</button>
+              </div>
+            </div>
+          </div>
+          <footer class="selection__footer">
+            <button class="selection__progress-btn" type="button" data-current="module-setup" data-target="roof-edge-selection" data-direction="previous">Previous</button>
+            <button disabled class="selection__progress-btn" type="button" data-current="module-setup" data-target="battery-selection" data-direction="next">Next</button>
+          </footer>
+          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
+            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
+            <svg class="info-dialog__roof-icon edge-selection">
+              <use href="#shed-roof-icon"></use>
+            </svg>
+            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
+            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
+          </dialog>
+        </article>
+
+
+
+
+
+
+
+
+
+        <!-- <button id="create-polygon" type="button">Polygon erstellen</button>
+        <button id="remove-polygon" type="button">Polygon entfernen</button>
+        <button id="create-modules" type="button">Module erstellen</button>
+        <button id="remove-modules" type="button">Module entfernen</button>
+        <br><br><br>
+        <div>
+          <div>
+            <label for="roof-angle">Roof Angle: </label><span id="display-roof-angle">30</span><br>
+            <button id="decrease-roof-angle" type="button">-</button>
+            <input id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step="1">
+            <button id="increase-roof-angle" type="button">+</button>
+          </div>
+          <br><br>
+          <div>
+            <label for="distortion-angle">Distotion Angle: </label><span id="display-distortion-angle">0</span><br>
+            <button id="decrease-distortion-angle" type="button">-</button>
+            <input id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step="1">
+            <button id="increase-distortion-angle" type="button">+</button>
+          </div>
+        </div>
+        <br><br> -->
+
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+    </section>
+  </main>
+  <script src="./src/js/map.js"></script>
+</body>
+
+</html>
