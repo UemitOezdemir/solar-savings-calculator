@@ -198,10 +198,12 @@ main {
 
 .selection__body {
   width: 100%;
+  height: 100%;
   flex: 1 1 10%;
   border: none;
   margin: unset;
   padding: 1rem 0 2rem;
+  position: relative;
 }
 
 .selection__body-setup-controls {
@@ -215,18 +217,18 @@ main {
 .selection__body-start-marking-btn {
   display: flex;
   align-items: center;
-  color: var(--text-color);
-  stroke: var(--text-color);
+  color: var(--roof-card-controls-btn-icon-active);
+  stroke: var(--roof-card-controls-btn-icon-active);
   column-gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
-  background-color: var(--btn-disabled);
+  background-color: var(--primary);
 }
 
 .selection__body-start-marking-btn[data-active="true"] {
-  color: var(--roof-card-controls-btn-icon-active);
-  stroke: var(--roof-card-controls-btn-icon-active);
-  background-color: var(--primary);
+  color: var(--text-color);
+  stroke: var(--text-color);
+  background-color: var(--btn-disabled);
 }
 
 .selection__body-start-marking-btn-icon {
@@ -316,21 +318,36 @@ main {
 }
 
 fieldset {
+  width: 100%;
+  height: 100%;
+  border: none;
+  margin: 0;
   position: relative;
 }
 
-.roof-selection {
+.roof-selection,
+.battery-selection {
   width: 6rem;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) rotateZ(var(--r, 0deg));
 }
+.battery-selection {
+  width: 6rem;
+}
+
 .roof-selection:nth-of-type(2) {
   --r: 72deg;
 }
+.battery-selection:nth-of-type(2) {
+  --r: 120deg;
+}
 .roof-selection:nth-of-type(3) {
   --r: 144deg;
+}
+.battery-selection:nth-of-type(3) {
+  --r: 240deg;
 }
 .roof-selection:nth-of-type(4) {
   --r: 216deg;
@@ -339,6 +356,7 @@ fieldset {
   --r: 288deg;
 }
 
+.battery-selection__input,
 .roof-selection__input {
   position: absolute;
   width: 1px;
@@ -351,10 +369,33 @@ fieldset {
   border: 0;
 }
 
+#battery-small + .battery-selection-label .battery-icon {
+  --storage-fill-50: var(--btn-disabled);
+}
+#battery-small:checked + .battery-selection-label .battery-icon {
+  --storage-fill-50: var(--primary);
+}
+#battery-medium + .battery-selection-label .battery-icon {
+  --storage-fill-75: var(--btn-disabled);
+}
+#battery-medium:checked + .battery-selection-label .battery-icon {
+  --storage-fill-75: var(--primary);
+}
+#battery-large + .battery-selection-label .battery-icon {
+  --storage-fill-100: var(--btn-disabled);
+}
+#battery-large:checked + .battery-selection-label .battery-icon {
+  --storage-fill-100: var(--primary);
+}
+
 .roof-selection__input:checked + .roof-selection-label .roof-icon {
   --roof-fill: var(--roof-selected);
 }
+/* .battery-selection__input:checked + .battery-selection-label .battery-icon {
+  --storage-stroke: var(--primary);
+} */
 
+.battery-selection__input:focus-visible + .battery-selection-label,
 .roof-selection__input:focus-visible + .roof-selection-label {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
@@ -362,8 +403,10 @@ fieldset {
 
 :root {
   --roof-selection-y: -120%;
+  --battery-selection-y: -80%;
 }
 
+.battery-selection-label,
 .roof-selection-label {
   display: flex;
   color: var(--text-color);
@@ -373,11 +416,20 @@ fieldset {
   text-transform: uppercase;
   transform: translateY(var(--roof-selection-y)) rotateZ(var(--angle, 0deg));
 }
+.battery-selection-label {
+  transform: translateY(var(--battery-selection-y)) rotateZ(var(--angle, 0deg));
+}
 .roof-selection:nth-of-type(2) {
   --angle: -72deg;
 }
+.battery-selection:nth-of-type(2) {
+  --angle: -120deg;
+}
 .roof-selection:nth-of-type(3) {
   --angle: -144deg;
+}
+.battery-selection:nth-of-type(3) {
+  --angle: -240deg;
 }
 .roof-selection:nth-of-type(4) {
   --angle: -216deg;
@@ -396,7 +448,42 @@ fieldset {
   flex-grow: 1;
   height: 100%;
   overflow: hidden;
+  position: relative;
   background-color: rgb(233, 214, 214);
+}
+
+#map-preview {
+  width: 4rem;
+  height: 4rem;
+  position: absolute;
+  z-index: 1000;
+  border-radius: 50%;
+  left: -50%;
+  top: 50%;
+  visibility: visible;
+  transform: translate(-50%, -100%);
+  border: solid .125rem red;
+}
+
+#map-preview[data-disabled="true"] {
+  visibility: hidden;
+}
+
+#map-preview:after {
+  content: "";
+  width: .5rem;
+  height: .5rem;
+  left: 50%;
+  top: 50%;
+  padding: 0;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-color: red;
+  border-radius: 50%;
+}
+
+#map-preview .leaflet-control-attribution {
+  display: none;
 }
 
 #map {
@@ -418,11 +505,11 @@ fieldset {
   background-color: var(--roof-card-active);
 }
 
-.roof-card__content {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-}
+/* .roof-card__content { */
+  /* display: flex; */
+  /* align-items: end; */
+  /* justify-content: space-between; */
+/* } */
 
 .roof-card__headline {
   font-size: 1.125rem;
@@ -430,8 +517,9 @@ fieldset {
 }
 
 .roof-card__description {
-  min-width: 12rem;
+  width: 100%;
   display: flex;
+  justify-content:  end;
   column-gap: 1rem;
   font-family: var(--text);
   font-size: 0.9rem !important;
@@ -441,17 +529,22 @@ fieldset {
 .roof-card__angle-wrapper,
 .roof-card__module-count-wrapper {
   height: 100%;
-  width: 50%;
+  /* width: 50%; */
   display: flex;
-  align-items: end;
+  /* align-items: end; */
 }
 
 .roof-card__angle-icon,
-.roof-card__module-count-icon {
-  height: 2rem;
+.roof-card__module-count-icon,
+.roof-card__total-power-icon {
+  height: 1.25rem;
   margin-right: 0.5rem;
   aspect-ratio: 1/1;
   stroke: var(--roof-card-controls-btn-icon);
+}
+
+.roof-card__total-power-icon {
+  fill: var(--roof-card-controls-btn-icon);
 }
 
 .roof-card__btn-container {
@@ -463,7 +556,7 @@ fieldset {
 }
 
 .roof-card__control-btn {
-  width: 2rem;
+  width: 1.75rem;
   aspect-ratio: 1/1;
   display: flex;
   transition:
@@ -509,28 +602,31 @@ fieldset {
 .setup-controls__angle-slider-wrapper {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 }
 
 .setup-controls__angle-slider-label {
-  margin-right: auto;
+  width: 100%;
   color: var(--text-color);
   font-size: var(--text-mid);
   font-family: var(--headline);
 }
 
 .setup-controls__angle-slider-btn {
-  height: 100%;
+  height: 1.75rem;
   aspect-ratio: 1/1;
   line-height: 100%;
   color: var(--headline-primary);
   font-weight: 700;
-  padding: 0.25rem 0.75rem;
   border-radius: 0.25rem;
   background-color: var(--primary);
+  cursor: pointer;
 }
 
 .setup-controls__angle-slider {
   width: 50%;
+  flex: 1 1;
   margin: 0 1rem;
+  cursor: pointer;
 }
