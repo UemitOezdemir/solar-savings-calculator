@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <link rel="stylesheet" href="src/css/normalize.css">
-  <link rel="stylesheet" href="src/css/pv-calculator.css">
+  <link rel="stylesheet" href="./src/css/normalize.css">
+  <link rel="stylesheet" href="./src/css/pv-calculator.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css">
@@ -14,46 +14,6 @@
 </head>
 
 <body>
-  <template id="roof-card">
-    <div class="roof-card" data-active="true" data-element="card">
-      <div class="roof-card__content">
-        <h4 class="roof-card__headline" data-element="headline">Roof 1</h4>
-        <div class="roof-card__description">
-          <div class="roof-card__angle-wrapper" aria-label="Dachwinkel">
-            <svg class="roof-card__angle-icon">
-              <use href="#roof-angle-icon"></use>
-            </svg>
-            <span class="roof-card__angle" data-element="angle">0</span>
-            <span>°</span>
-          </div>
-          <div class="roof-card__module-count-wrapper" aria-label="Anzahl der Module">
-            <svg class="roof-card__module-count-icon">
-              <use href="#solar-module-icon"></use>
-            </svg>
-            <span class="roof-card__module-count" data-element="module-count">0</span>
-            <span>pc</span>
-          </div>
-        </div>
-      </div>
-      <div class="roof-card__btn-container">
-        <button data-active="true" class="roof-card__control-btn" type="button" data-element="edit" title="Edit roof setup" aria-label="Edit roof setup">
-          <svg class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
-            <use href="#pen-icon"></use>
-          </svg>
-        </button>
-        <button data-active="false" class="roof-card__control-btn" type="button" data-element="hide" title="Hide roof setup" aria-label="Hide roof setup">
-          <svg viewBox="15 35 170 130" class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
-            <path d="M 20 100 C 50 40, 150 40, 180 100 C 150 160, 50 160, 20 100 Z" mask="url(#global-eye-mask)" />
-          </svg>
-        </button>
-        <button data-active="false" class="roof-card__control-btn" type="button" data-element="delete" title="Delete roof setup" aria-label="Delete roof setup">
-          <svg class="roof-card__btn-icon" xmlns="http://www.w3.org" aria-hidden="true">
-            <use href="#bin-icon"></use>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </template>
   <svg style="display: none;">
     <symbol viewBox="0 0 512 512" id="pen-icon">
       <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"></path>
@@ -98,6 +58,11 @@
       <!-- Base -->
       <line x1="100" y1="130" x2="100" y2="170" stroke-width="4" stroke-linecap="square" />
       <line x1="30" y1="170" x2="170" y2="170" stroke-width="4" stroke-linecap="square" />
+    </symbol>
+  </svg>
+  <svg style="display: none;">
+    <symbol viewBox="10 4.8 20 30.3" id="solar-power-total-icon" xmlns="http://w3.org">
+      <path xmlns="http://www.w3.org/2000/svg" stroke-width=".1" d="M12.398,35c-0.162,0-0.322-0.049-0.459-0.141c-0.33-0.215-0.463-0.624-0.323-0.995l4.192-11.087h-4.797  c-0.341,0-0.645-0.203-0.773-0.518c-0.131-0.316-0.059-0.675,0.182-0.913L26.623,5.245C26.781,5.086,26.992,5,27.214,5  c0.158,0,0.313,0.045,0.444,0.128c0.333,0.21,0.475,0.613,0.344,0.984l-3.848,11.103h4.835c0.343,0,0.647,0.205,0.776,0.523  c0.128,0.318,0.053,0.677-0.191,0.915l-16.59,16.11C12.825,34.914,12.616,35,12.398,35L12.398,35z M13.042,21.103h3.979  c0.275,0,0.534,0.135,0.691,0.361c0.155,0.227,0.189,0.516,0.092,0.772l-2.981,7.887l0.319,0.209L26.924,18.89h-3.945  c-0.272,0-0.527-0.131-0.682-0.352c-0.157-0.22-0.198-0.503-0.11-0.761l2.774-7.998l-0.32-0.203L13.042,21.103z"/>
     </symbol>
   </svg>
   <svg style="display: none;">
@@ -227,6 +192,17 @@
       <line x1="60" y1="140" x2="140" y2="60" stroke="black" stroke-width="16" />
     </mask>
   </svg>
+  <svg style="display: none;">
+    <symbol id="battery-icon" viewBox="0 0 100 100" fill="none" xmlns="http://w3.org">
+      <!-- Horizontale Unterteilungen -->
+      <path d="M10 65 10 80 C 10 95, 90 95, 90 80 L 90 65" stroke="var(--storage-stroke, #1f2937)" stroke-width="1" fill="var(--storage-fill-25, var(--storage-fill-50, var(--storage-fill-75, var(--storage-fill-100, white))))" />
+      <path d="M10 50 10 65 C 10 80, 90 80, 90 65 L 90 50" stroke="var(--storage-stroke, #1f2937)" stroke-width="1" fill="var(--storage-fill-50, var(--storage-fill-75, var(--storage-fill-100, white)))" />
+      <path d="M10 35 10 50 C 10 65, 90 65, 90 50 L 90 35" stroke="var(--storage-stroke, #1f2937)" stroke-width="1" fill="var(--storage-fill-75, var(--storage-fill-100, white))" />
+      <path d="M10 20 10 35 C 10 50, 90 50, 90 35 L 90 20" stroke="var(--storage-stroke, #1f2937)" stroke-width="1" fill="var(--storage-fill-100, white)" />
+      <!-- Hauptzylinder / Speichergehäuse -->
+      <path d="M10 20 C 15 5, 85 5, 90 20 C 90 35 10 35, 10 20 Z" stroke="var(--storage-stroke, #1f2937)" stroke-width="1" stroke-linejoin="round" fill="var(--storage-fill-100, white)" />
+    </symbol>
+  </svg>
   <header class="header-wrapper">
     <div class="header">
       <div class="header__box-left">
@@ -239,237 +215,30 @@
   <main>
     <section class="main-content">
       <div class="selection-wrapper">
-        <article id="roof-type-selection" class="selection" aria-labelledby="roof-selection-headline">
+        <article class="selection" aria-labelledby="headline">
           <header class="selection__header-wrapper">
-            <h2 id="roof-selection-headline" class="selection__header">Select Roof Type</h2>
-            <button aria-hidden="true" type="button" class="selection__info-btn"></button>
-            <span>1/5</span>
-          </header>
-          <fieldset class="selection__body">
-            <div class="roof-selection">
-              <input class="roof-selection__input" type="radio" id="gable-roof" name="roof-type" value="gable-roof">
-              <label class="roof-selection-label" for="gable-roof">
-                <svg class="roof-icon" viewBox="0 0 103 93">
-                  <use href="#gable-roof-icon"></use>
-                </svg>
-                <span>Gable</span>
-              </label>
-            </div>
-            <div class="roof-selection">
-              <input class="roof-selection__input" type="radio" id="hip-roof" name="roof-type" value="hip-roof">
-              <label class="roof-selection-label" for="hip-roof">
-                <svg class="roof-icon" viewBox="0 0 103 93">
-                  <use href="#hip-roof-icon"></use>
-                </svg>
-                <span>Hip</span>
-              </label>
-            </div>
-            <div class="roof-selection">
-              <input class="roof-selection__input" type="radio" id="pyramid-roof" name="roof-type" value="pyramid-hip">
-              <label class="roof-selection-label" for="pyramid-roof">
-                <svg class="roof-icon" viewBox="0 0 103 93">
-                  <use href="#pyramid-roof-icon"></use>
-                </svg>
-                <span>Pyramid</span>
-              </label>
-            </div>
-            <div class="roof-selection">
-              <input class="roof-selection__input" type="radio" id="flat-roof" name="roof-type" value="flat">
-              <label class="roof-selection-label" for="flat-roof">
-                <svg class="roof-icon" viewBox="0 0 103 93">
-                  <use href="#flat-roof-icon"></use>
-                </svg>
-                <span>Flat</span>
-              </label>
-            </div>
-            <div class="roof-selection">
-              <input class="roof-selection__input" type="radio" id="shed-roof" name="roof-type" value="shed">
-              <label class="roof-selection-label" for="shed-roof">
-                <svg class="roof-icon" viewBox="0 0 103 93">
-                  <use href="#shed-roof-icon"></use>
-                </svg>
-                <span>Shed</span>
-              </label>
-            </div>
-          </fieldset>
-          <footer class="selection__footer">
-            <button disabled class="selection__progress-btn" type="button" data-current="roof-type-selection" data-target="roof-setup" data-direction="next" onclick="document.getElementById('mark-out-info').showModal()">Next</button>
-          </footer>
-        </article>
-        <article id="roof-setup" class="selection" aria-labelledby="roof-selection-headline" hidden>
-          <header class="selection__header-wrapper">
-            <h2 id="roof-selection-headline" class="selection__header">Mark out the roof area</h2>
-            <button type="button" class="selection__info-btn" onclick="document.getElementById('mark-out-info').showModal()">
+            <h2 id="headline" class="selection__header" data-element="headline"></h2>
+            <button type="button" class="selection__info-btn">
               <svg class="selection__info-icon">
                 <use href="#info-icon"></use>
               </svg>
             </button>
-            <span>2/5</span>
+            <span data-element="progress-counter"></span>
           </header>
-          <div class="selection__body" data-mark-up="true">
-            <div class="selection__body-setup-controls">
-              <button id="add-new-roof" type="button" data-active="false" class="selection__body-start-marking-btn">
-                <svg class="selection__body-start-marking-btn-icon">
-                  <use href="#plus-icon"></use>
-                </svg>
-                <span>Add new roof</span>
-              </button>
-            </div>
+          <div class="selection__body" data-element="main-content-container">
+            <div class="selection__body-setup-controls" data-element="control-elements-container"></div>
           </div>
-          <footer class="selection__footer">
-            <button class="selection__progress-btn" type="button" data-current="roof-setup" data-target="roof-type-selection" data-direction="previous">Previous</button>
-            <button disabled class="selection__progress-btn" type="button" data-current="roof-setup" data-target="roof-edge-selection" data-direction="next" onclick="document.getElementById('roof-edge-info').showModal()">Next</button>
+          <footer class="selection__footer" data-element="progress-btn-container">
           </footer>
-          <dialog class="info-dialog" id="mark-out-info" aria-labelledby="mark-out-header">
-            <h2 id="mark-out-header" class="info-dialog__headline">Mark off the roof area where you want to install PV modules.</h2>
-            <svg class="info-dialog__roof-icon mark-out">
-              <use href="#shed-roof-icon"></use>
-            </svg>
-            <p class="info-dialog__description"><b>Here's how:</b> Click on each corner of your roof one by one to define the buildable area. Close the shape by clicking on the first point again.</p>
-            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
-          </dialog>
         </article>
-        <article id="roof-edge-selection" class="selection" aria-labelledby="roof-edge-headline" hidden>
-          <header class="selection__header-wrapper">
-            <h2 id="roof-edge-headline" class="selection__header">Select roof edge</h2>
-            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
-              <svg class="selection__info-icon">
-                <use href="#info-icon"></use>
-              </svg>
-            </button>
-            <span>3/5</span>
-          </header>
-          <div class="selection__body" data-mark-up="true">
-          </div>
-          <footer class="selection__footer">
-            <button class="selection__progress-btn" type="button" data-current="roof-edge-selection" data-target="roof-setup" data-direction="previous">Previous</button>
-            <button disabled class="selection__progress-btn" type="button" data-current="roof-edge-selection" data-target="module-setup" data-direction="next">Next</button>
-          </footer>
-          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
-            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
-            <svg class="info-dialog__roof-icon edge-selection">
-              <use href="#shed-roof-icon"></use>
-            </svg>
-            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
-            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
-          </dialog>
-        </article>
-        <article id="module-setup" class="selection" aria-labelledby="roof-selection-headline" hidden>
-          <header class="selection__header-wrapper">
-            <h2 id="roof-selection-headline" class="selection__header">Setup Modules</h2>
-            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
-              <svg class="selection__info-icon">
-                <use href="#info-icon"></use>
-              </svg>
-            </button>
-            <span>3/5</span>
-          </header>
-          <div class="selection__body" data-mark-up="true">
-            <div class="selection__body-setup-controls">
-              <div class="setup-controls__angle-slider-wrapper">
-                <label class="setup-controls__angle-slider-label" for="roof-angle">Roof Angle: <span id="display-roof-angle">30</span></label>
-                <button class="setup-controls__angle-slider-btn" id="decrease-roof-angle" type="button">-</button>
-                <input class="setup-controls__angle-slider" id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step=".5">
-                <button class="setup-controls__angle-slider-btn" id="increase-roof-angle" type="button">+</button>
-              </div>
-              <div class="setup-controls__angle-slider-wrapper">
-                <label class="setup-controls__angle-slider-label" for="distortion-angle">Distotion Angle: <span id="display-distortion-angle">0</span></label>
-                <button class="setup-controls__angle-slider-btn" id="decrease-distortion-angle" type="button">-</button>
-                <input class="setup-controls__angle-slider" id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step=".5">
-                <button class="setup-controls__angle-slider-btn" id="increase-distortion-angle" type="button">+</button>
-              </div>
-            </div>
-          </div>
-          <footer class="selection__footer">
-            <button class="selection__progress-btn" type="button" data-current="module-setup" data-target="roof-edge-selection" data-direction="previous">Previous</button>
-            <button disabled class="selection__progress-btn" type="button" data-current="module-setup" data-target="battery-selection" data-direction="next">Next</button>
-          </footer>
-          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
-            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
-            <svg class="info-dialog__roof-icon edge-selection">
-              <use href="#shed-roof-icon"></use>
-            </svg>
-            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
-            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
-          </dialog>
-        </article>
-        <article id="battery-selection" class="selection" aria-labelledby="roof-selection-headline" hidden>
-          <header class="selection__header-wrapper">
-            <h2 id="roof-selection-headline" class="selection__header">Setup Modules</h2>
-            <button type="button" class="selection__info-btn" onclick="document.getElementById('roof-edge-info').showModal()">
-              <svg class="selection__info-icon">
-                <use href="#info-icon"></use>
-              </svg>
-            </button>
-            <span>3/5</span>
-          </header>
-          <div class="selection__body" data-mark-up="true">
-            <div class="selection__body-setup-controls">
-              <div class="setup-controls__angle-slider-wrapper">
-                <label class="setup-controls__angle-slider-label" for="roof-angle">Roof Angle: <span id="display-roof-angle">30</span></label>
-                <button class="setup-controls__angle-slider-btn" id="decrease-roof-angle" type="button">-</button>
-                <input class="setup-controls__angle-slider" id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step=".5">
-                <button class="setup-controls__angle-slider-btn" id="increase-roof-angle" type="button">+</button>
-              </div>
-              <div class="setup-controls__angle-slider-wrapper">
-                <label class="setup-controls__angle-slider-label" for="distortion-angle">Distotion Angle: <span id="display-distortion-angle">0</span></label>
-                <button class="setup-controls__angle-slider-btn" id="decrease-distortion-angle" type="button">-</button>
-                <input class="setup-controls__angle-slider" id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step=".5">
-                <button class="setup-controls__angle-slider-btn" id="increase-distortion-angle" type="button">+</button>
-              </div>
-            </div>
-          </div>
-          <footer class="selection__footer">
-            <button class="selection__progress-btn" type="button" data-current="module-setup" data-target="roof-edge-selection" data-direction="previous">Previous</button>
-            <button disabled class="selection__progress-btn" type="button" data-current="module-setup" data-target="battery-selection" data-direction="next">Next</button>
-          </footer>
-          <dialog class="info-dialog" id="roof-edge-info" aria-labelledby="mark-out-header">
-            <h2 id="mark-out-header" class="info-dialog__headline">Select roof edge.</h2>
-            <svg class="info-dialog__roof-icon edge-selection">
-              <use href="#shed-roof-icon"></use>
-            </svg>
-            <p class="info-dialog__description"><b>Here's how:</b> Click to select the roof edge as shown in the image. This is required to calculate the azimuth angle.</p>
-            <button class="info-dialog__close-btn" type="button" onclick="this.closest('dialog').close()" aria-label="Close dialog">Start</button>
-          </dialog>
-        </article>
-
-
-
-
-
-
-
-
-
-        <!-- <button id="create-polygon" type="button">Polygon erstellen</button>
-        <button id="remove-polygon" type="button">Polygon entfernen</button>
-        <button id="create-modules" type="button">Module erstellen</button>
-        <button id="remove-modules" type="button">Module entfernen</button>
-        <br><br><br>
-        <div>
-          <div>
-            <label for="roof-angle">Roof Angle: </label><span id="display-roof-angle">30</span><br>
-            <button id="decrease-roof-angle" type="button">-</button>
-            <input id="roof-angle" name="roof-angle" type="range" min="0" max="50" value="30" step="1">
-            <button id="increase-roof-angle" type="button">+</button>
-          </div>
-          <br><br>
-          <div>
-            <label for="distortion-angle">Distotion Angle: </label><span id="display-distortion-angle">0</span><br>
-            <button id="decrease-distortion-angle" type="button">-</button>
-            <input id="distortion-angle" name="distortion-angle" type="range" min="-45" max="45" value="0" step="1">
-            <button id="increase-distortion-angle" type="button">+</button>
-          </div>
-        </div>
-        <br><br> -->
-
       </div>
       <div class="map-container">
+        <div id="map-preview" data-disabled="true"></div>
         <div id="map"></div>
       </div>
     </section>
   </main>
-  <script src="./src/js/map.js"></script>
+  <script type="module" src="./src/js/map.js"></script>
 </body>
 
 </html>
