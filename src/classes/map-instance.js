@@ -6,6 +6,8 @@ import AddNewRoofBtnManager from "./add-new-roof-button-manager.js";
 import RoofInstance from "./roof-instance.js";
 import AngleSliderManager from "./angle-slider-manager.js";
 import BatterySizeSelectionManager from "./battery-size-selection-manager.js";
+import InfoButtonManager from "./info-button-manager.js";
+
 
 export default class MapInstance {
   constructor(
@@ -13,6 +15,7 @@ export default class MapInstance {
     mapContainer,
     mapPreview,
     headline,
+    infoBtnContainer,
     progressCounter,
     controlElementsContainer,
     mainContentContainer,
@@ -30,6 +33,7 @@ export default class MapInstance {
 
     // All container
     this.headline = headline;
+    this.infoBtnContainer = infoBtnContainer;
     this.progressCounter = progressCounter;
     this.controlElementsContainer = controlElementsContainer;
     this.mainContentContainer = mainContentContainer;
@@ -50,6 +54,9 @@ export default class MapInstance {
     // Manager for progress buttons (previous / next)
     this.progressBtnManager = null;
 
+    // Info / Instruction Dialog and Button
+    this.infoButtonManager = null;
+
     // Selections
     this.selectedRoofType = null;
     this.selectedBatterySize = null;
@@ -67,6 +74,7 @@ export default class MapInstance {
     this.createAddNewRoofButtonManager();
     this.createAngleSliderManager();
     this.createBatterySizeSelectionManager();
+    this.createInfoButtonManager()
   }
 
   createMap() {
@@ -158,6 +166,10 @@ export default class MapInstance {
     this.batterySizeSelectionManager = new BatterySizeSelectionManager(this);
   }
 
+  createInfoButtonManager() {
+    this.infoButtonManager = new InfoButtonManager(this);
+  }
+
   disablePrevRoofInstances() {
     const count = this.roofInstances.length;
 
@@ -197,6 +209,7 @@ export default class MapInstance {
     this.addNewRoofBtnManager.updateAddNewRoofBtnToCurrentState();
     this.angleSliderManager.updateSliderControlsToCurrentState();
     this.batterySizeSelectionManager.updateBatterySizeSelectionToCurrentState();
+    this.infoButtonManager.updateInfoBtnToCurrentState();
   }
 
   startMarkingMode() {

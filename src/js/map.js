@@ -9,6 +9,7 @@ const qs = (sel) => {
 
 const startCoords = [47.650654145124975, 9.470023180118131];
 const headline = qs('[data-element="headline"]');
+const infoBtnContainer = qs('[data-element="info-btn-container"]');
 const progressCounter = qs('[data-element="progress-counter"]')
 const controlElementsContainer = qs('[data-element="control-elements-container"]')
 const mainContentContainer = qs('[data-element="main-content-container"]')
@@ -24,6 +25,7 @@ const map = new MapInstance(
   mapContainer,
   mapPreview,
   headline,
+  infoBtnContainer,
   progressCounter,
   controlElementsContainer,
   mainContentContainer,
