@@ -1,10 +1,11 @@
 const annualConsumptionTemplateHTML = `    
     <div class="consumption-wrapper" data-element="consumption">
-        <label class="consumption-label" id="consumption-label" for="consumption">
+        <label class="visually-hidden" id="consumption-label" for="consumption">
             Annual Electricity Consumption
         </label>
         <div class="consumption-input-wrapper">
             <input 
+            data-element="consumption-input"
             class="consumption-input"
             type="number" 
             id="consumption" 

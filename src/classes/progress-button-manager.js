@@ -14,14 +14,6 @@ export default class ProgressButtonManager {
 
     this.allProgressBtns = [];
 
-    this.allSteps = [
-      "roof-type-selection",
-      "roof-setup",
-      "roof-edge-selection",
-      "module-setup",
-      "battery-size-selection",
-    ];
-
     this.steps = {
       "roof-type-selection": {
         previous: { interaction: false },
@@ -60,13 +52,15 @@ export default class ProgressButtonManager {
   }
 
   updateCurrentStep() {
-    this.mapInstance.step = this.allSteps[this.stepCounter];
+    const currStep =  Object.keys(this.steps)[this.stepCounter];
+    this.mapInstance.step = currStep;
+
     this.updateHeadlineToCurrentStep();
   }
 
   updateHeadlineToCurrentStep() {
     this.mapInstance.headline.textContent = this.steps[this.mapInstance.step].headline;
-    this.mapInstance.progressCounter.textContent = `${this.stepCounter + 1} / ${this.allSteps.length}`
+    this.mapInstance.progressCounter.textContent = `${this.stepCounter + 1} / ${Object.keys(this.steps).length}`
   }
 
   createButtons() {

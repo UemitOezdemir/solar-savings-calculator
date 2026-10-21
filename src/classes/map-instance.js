@@ -7,6 +7,7 @@ import RoofInstance from "./roof-instance.js";
 import AngleSliderManager from "./angle-slider-manager.js";
 import BatterySizeSelectionManager from "./battery-size-selection-manager.js";
 import InfoButtonManager from "./info-button-manager.js";
+import AnnualConsumptionInputManager from "./annual-consumption-input-manager.js";
 
 
 export default class MapInstance {
@@ -57,9 +58,13 @@ export default class MapInstance {
     // Info / Instruction Dialog and Button
     this.infoButtonManager = null;
 
+    // Annual Consumption Input
+    this.annualConsumptionInputManager = null;
+
     // Selections
     this.selectedRoofType = null;
     this.selectedBatterySize = null;
+    this.annualConsumption = null;
 
     // State of Step
     this.step = null;
@@ -75,6 +80,7 @@ export default class MapInstance {
     this.createAngleSliderManager();
     this.createBatterySizeSelectionManager();
     this.createInfoButtonManager()
+    this.createAnnualConsumptionInputManager()
   }
 
   createMap() {
@@ -170,6 +176,10 @@ export default class MapInstance {
     this.infoButtonManager = new InfoButtonManager(this);
   }
 
+  createAnnualConsumptionInputManager() {
+    this.annualConsumptionInputManager = new AnnualConsumptionInputManager(this);
+  }
+
   disablePrevRoofInstances() {
     const count = this.roofInstances.length;
 
@@ -210,6 +220,7 @@ export default class MapInstance {
     this.angleSliderManager.updateSliderControlsToCurrentState();
     this.batterySizeSelectionManager.updateBatterySizeSelectionToCurrentState();
     this.infoButtonManager.updateInfoBtnToCurrentState();
+    this.annualConsumptionInputManager.updateAnnualConsumptionInputToCurrentState();
   }
 
   startMarkingMode() {
