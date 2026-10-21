@@ -19,7 +19,7 @@ const annualConsumptionTemplateHTML = `
             <span id="consumption-unit" aria-hidden="true">kWh</span>
         </div>
         <p id="consumption-hilfe" class="consumption-helper-text">
-            Enter your electricity usage in kilowatt-hours (kWh). You can find this on your most recent bill.
+            Enter your annual electricity usage in kilowatt-hours (kWh). You can find this on your most recent bill.
         </p>
     </div>`;
 
