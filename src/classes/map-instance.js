@@ -6,6 +6,7 @@ import AddNewRoofBtnManager from "./add-new-roof-button-manager.js";
 import RoofInstance from "./roof-instance.js";
 import AngleSliderManager from "./angle-slider-manager.js";
 import BatterySizeSelectionManager from "./battery-size-selection-manager.js";
+import InstructionDialogManager from "./instruction-dialog-manager.js";
 import InfoButtonManager from "./info-button-manager.js";
 import AnnualConsumptionInputManager from "./annual-consumption-input-manager.js";
 
@@ -17,6 +18,7 @@ export default class MapInstance {
     mapPreview,
     headline,
     infoBtnContainer,
+    instructionContainer,
     progressCounter,
     controlElementsContainer,
     mainContentContainer,
@@ -35,6 +37,7 @@ export default class MapInstance {
     // All container
     this.headline = headline;
     this.infoBtnContainer = infoBtnContainer;
+    this.instructionContainer = instructionContainer;
     this.progressCounter = progressCounter;
     this.controlElementsContainer = controlElementsContainer;
     this.mainContentContainer = mainContentContainer;
@@ -57,6 +60,7 @@ export default class MapInstance {
 
     // Info / Instruction Dialog and Button
     this.infoButtonManager = null;
+    this.instructionDialogManager = null;
 
     // Annual Consumption Input
     this.annualConsumptionInputManager = null;
@@ -74,13 +78,14 @@ export default class MapInstance {
     this.createMap();
     this.loadTiles();
     this.setLayerIndex();
-    this.createProgressBtnManager();
-    this.createRoofTypeSelectionManager();
-    this.createAddNewRoofButtonManager();
-    this.createAngleSliderManager();
-    this.createBatterySizeSelectionManager();
-    this.createInfoButtonManager()
-    this.createAnnualConsumptionInputManager()
+    this.createAllManagerClasses();
+    // this.createProgressBtnManager();
+    // this.createRoofTypeSelectionManager();
+    // this.createAddNewRoofButtonManager();
+    // this.createAngleSliderManager();
+    // this.createBatterySizeSelectionManager();
+    // this.createInfoButtonManager()
+    // this.createAnnualConsumptionInputManager()
   }
 
   createMap() {
@@ -152,33 +157,44 @@ export default class MapInstance {
     this.map.getPane("polygon-to-back").style.zIndex = 540;
   }
 
-  createProgressBtnManager() {
+  createAllManagerClasses() {
     this.progressBtnManager = new ProgressButtonManager(this);
-  }
-
-  createRoofTypeSelectionManager() {
     this.roofTypeSelectionManager = new RoofTypeSelectionManager(this);
-  }
-
-  createAddNewRoofButtonManager() {
     this.addNewRoofBtnManager = new AddNewRoofBtnManager(this);
-  }
-
-  createAngleSliderManager() {
     this.angleSliderManager = new AngleSliderManager(this);
-  }
-
-  createBatterySizeSelectionManager() {
     this.batterySizeSelectionManager = new BatterySizeSelectionManager(this);
-  }
-
-  createInfoButtonManager() {
+    this.instructionDialogManager = new InstructionDialogManager(this);
     this.infoButtonManager = new InfoButtonManager(this);
-  }
-
-  createAnnualConsumptionInputManager() {
     this.annualConsumptionInputManager = new AnnualConsumptionInputManager(this);
   }
+
+  // createProgressBtnManager() {
+  //   this.progressBtnManager = new ProgressButtonManager(this);
+  // }
+
+  // createRoofTypeSelectionManager() {
+  //   this.roofTypeSelectionManager = new RoofTypeSelectionManager(this);
+  // }
+
+  // createAddNewRoofButtonManager() {
+  //   this.addNewRoofBtnManager = new AddNewRoofBtnManager(this);
+  // }
+
+  // createAngleSliderManager() {
+  //   this.angleSliderManager = new AngleSliderManager(this);
+  // }
+
+  // createBatterySizeSelectionManager() {
+  //   this.batterySizeSelectionManager = new BatterySizeSelectionManager(this);
+  // }
+
+  // createInfoButtonManager() {
+  //   this.infoButtonManager = new InfoButtonManager(this);
+  // }
+
+  // createAnnualConsumptionInputManager() {
+  //   this.annualConsumptionInputManager = new AnnualConsumptionInputManager(this);
+  // }
 
   disablePrevRoofInstances() {
     const count = this.roofInstances.length;
@@ -219,6 +235,7 @@ export default class MapInstance {
     this.addNewRoofBtnManager.updateAddNewRoofBtnToCurrentState();
     this.angleSliderManager.updateSliderControlsToCurrentState();
     this.batterySizeSelectionManager.updateBatterySizeSelectionToCurrentState();
+    this.instructionDialogManager.updateInstructionDialogToCurrentState();
     this.infoButtonManager.updateInfoBtnToCurrentState();
     this.annualConsumptionInputManager.updateAnnualConsumptionInputToCurrentState();
   }

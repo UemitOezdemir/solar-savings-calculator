@@ -30,11 +30,12 @@ export default class InfoButtonInstance {
 
   bindClickEventHandler() {
     this.btn.addEventListener("click", () => {
-    //   if (this.isDisabled) return;
+      document.getElementById(this.btn.dataset.dialogOpen).showModal();
+      //   if (this.isDisabled) return;
 
-    //   this.mapInstance.createRoofInstance();
-    //   this.mapInstance.startMarkingMode();
-    //   this.mapInstance.setProgressBtnState("disable");
+      //   this.mapInstance.createRoofInstance();
+      //   this.mapInstance.startMarkingMode();
+      //   this.mapInstance.setProgressBtnState("disable");
     });
   }
 }

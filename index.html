@@ -234,6 +234,38 @@
         <div id="map"></div>
       </div>
     </section>
+    <dialog id="instruction-note" class="info-dialog" aria-labelledby="instruction-note-titel" data-element="instruction-container">
+      <form method="dialog" data-element="instruction" data-step="roof-setup">
+        <h2 id="instruction-note-titel" class="info-dialog__headline">Instruction</h2>
+        <p>Mark the sides of the roof where the PV modules are to be installed.</p>
+        <ol role="list" class="info-dialog__steps-list">
+          <li role="listitem" class="info-dialog__steps-list-item">
+            <span>
+              Start the mark-out mode by clicking the
+              <span style="display: inline-block;">
+                <span class="selection__body-start-marking-btn">
+                  <svg class="selection__body-start-marking-btn-icon" aria-hidden="true">
+                    <use href="#plus-icon"></use>
+                  </svg>
+                  <span>Add new roof</span>
+                </span>
+              </span>
+              button.
+            </span>
+          </li>
+          <li role="listitem" class="info-dialog__steps-list-item">
+            <span>Click on the corners of the roof to mark its actual usable area. You can adjust the marker positions by dragging them.</span>
+            <svg class="info-dialog__roof-icon mark-out" data-element="roof-icon">
+              <use href="#gable-roof-icon"></use>
+            </svg>
+          </li>
+          <li role="listitem" class="info-dialog__steps-list-item">
+            <span>Repeat these steps to mark out multiple roof surfaces..</span>
+          </li>
+        </ol>
+        <button class="info-dialog__close-btn">Got it !</button>
+      </form>
+    </dialog>
   </main>
   <script type="module" src="./src/js/map.js"></script>
 </body>

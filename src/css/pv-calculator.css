@@ -279,23 +279,54 @@ main {
 .info-dialog {
   width: 100%;
   max-width: 25rem;
+  max-height: 75vh;
+  padding: 2rem 1rem;
   border-radius: 0.5rem;
   border-color: var(--accent);
+  color: var(--text-color);
 }
 
 .info-dialog__headline {
-  color: var(--text-color);
   font-size: var(--headline-mid);
   font-family: var(--headline);
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+}
+
+.info-dialog__steps-list {
+  list-style: decimal !important;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+  margin-top: 3rem;
+}
+
+.info-dialog__steps-list-item {
+  padding-left: 1rem;
+  font-size: .9rem;
+}
+
+.info-dialog__steps-list-item::marker {
+  font-family: var(--headline);
+}
+
+.info-dialog__close-btn {
+  display: block;
+  padding: .5rem 1rem;
+  margin: auto;
+  color: var(--headline-primary);
+  font-family: var(--headline);
+  border-radius: .25rem;
+  background-color: var(--primary);
+  margin-top: 3rem;
 }
 
 .info-dialog__roof-icon {
   width: 10rem;
   display: block;
-  margin: auto;
-  margin-bottom: 1rem;
+  margin: 1rem auto 0;
 }
+
 .mark-out {
   --roof-edge: red;
   --roof-edge-width: 2px;
@@ -304,7 +335,7 @@ main {
   --marker-stroke: red;
   --marker-fill: red;
 }
-.edge-selection {
+.roof-edge-selection {
   --roof-edge: orange;
   --roof-edge-width: 2px;
   --roof-ridge: orange;
@@ -325,7 +356,7 @@ main {
   margin-bottom: 3rem;
 }
 
-.info-dialog__close-btn {
+/* .info-dialog__close-btn {
   display: block;
   margin: auto;
   border-radius: 100px;
@@ -334,7 +365,7 @@ main {
   font-size: var(--text-mid);
   font-family: var(--headline);
   background-color: var(--primary);
-}
+} */
 
 fieldset {
   width: 100%;
