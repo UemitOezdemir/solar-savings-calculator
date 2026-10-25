@@ -55,9 +55,6 @@ const moduleSetupInstructionDialogTemplateHTML = `
             <span>Adjust the layout of the solar panels to fit your roof. Remove individual panels to make room for skylights, dormers, or similar features. You can remove and add panels by clicking on them.</span>
             <img class="info-dialog__roof-icon mark-out" src="./src/img/remove-modules.gif">
           </li>
-          <li role="listitem" class="info-dialog__steps-list-item">
-            <span>Repeat these steps to mark out multiple roof surfaces.</span>
-          </li>
         </ol>
         <button class="info-dialog__close-btn">Got it !</button>
     </form>`;
